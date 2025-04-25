@@ -10,11 +10,11 @@ If you use these codes in your research, please cite the paper.
 ## Workflow
 
 
-	![Workflow](Workflow.png)  
-	- pyctimg.py is a library that needs to be imported in the other codes and must be located in the same directory as them. It consists of class and function definitions.  
-	- cft.py implements the Contour-Free Technique. For each sample, it loads a 3D input image and stores a .cdb and a .txt file in Ansys_WD directory. The variables generated through this process along with the runtime are stored in CFT/{sample}.  
-	- snake.py implements the Snake model. For each sample, it receives an input image as a 3D array and stores the 3D contours, other variables generated through the process, and the runtime in SNAKE/{sample}.  
-	- srt.py implements the Snake-Reliant Technique. For each sample, it loads a 3D input image along with its 3D contour and stores a .cdb and a .txt file in Ansys_WD. The variables generated through this process along with the runtime are stored in SRT/{sample}.  
+![Workflow](Workflow.png)  
+- pyctimg.py is a library that needs to be imported in the other codes and must be located in the same directory as them. It consists of class and function definitions.  
+- cft.py implements the Contour-Free Technique. For each sample, it loads a 3D input image and stores a .cdb and a .txt file in Ansys_WD directory. The variables generated through this process along with the runtime are stored in CFT/{sample}.  
+- snake.py implements the Snake model. For each sample, it receives an input image as a 3D array and stores the 3D contours, other variables generated through the process, and the runtime in SNAKE/{sample}.  
+- srt.py implements the Snake-Reliant Technique. For each sample, it loads a 3D input image along with its 3D contour and stores a .cdb and a .txt file in Ansys_WD. The variables generated through this process along with the runtime are stored in SRT/{sample}.  
 
 
 Note About Array Naming  
