@@ -3,8 +3,8 @@
 
 This repository contains the codes for our paper:  
 Fast Automated Creation of Digital Twins for Virtual Mechanical Testing of Ovine Fractured Tibia  
-Accepted for publication in Computers in Biology and Medicine (CIBM).  
-Link to paper will be provided once published.  
+published open access in Computers in Biology and Medicine (CIBM):  
+https://doi.org/10.1016/j.compbiomed.2025.110268  
 If you use these codes in your research, please cite the paper.
 
 ## Workflow
