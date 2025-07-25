@@ -9,6 +9,7 @@ from pyctimg import *
 
 mpl.rc('image', cmap = 'image') # set image colormap to 'bone' throghout the code
 ansys_wd = 'Ansys_WD' # set location for saving Ansys 'cdb' files
+abaq_wd = 'Abaqus_WD' # set location for saving Abaqus 'inp' file
 tau_ef = 2750 # element formation threshold
 f_ds = 2 # downsampling factor
 e_cut = 6800; e_min = 50 # cut_off elastic modulus, minimum elastic modulus
@@ -62,6 +63,7 @@ for nam_full in nams: # iterate over files in directory
 	np.save('SRT/{}/elastic_modulus'.format(nam), vce)
 	da = (2*f_ds+1)*r_cts/1000 # calculate element size
 	mesh.write_Ansys_input(f_ds, '{}/{}_srt'.format(ansys_wd, nam))
+	mesh.write_Abaqus_input(f_ds, '{}/{}_srt'.format(abaq_wd, nam), da)
 	t_e = time.time() # stop time
 	dt = np.int16(round(t_e-t_s)); print(dt, '\n') # calculate and print runtime
 	f = open('SRT/{}/run_time.txt'.format(nam), 'w'); f.write(str(dt)); f.close() # save runtime

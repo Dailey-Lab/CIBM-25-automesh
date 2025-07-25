@@ -373,7 +373,54 @@ class Mesh():
 				fil.write('{:>8}'.format(self.nodes_on_element[e, c]+1))
 			fil.write('\n')
 		fil.close()
-	
+
+	def write_Abaqus_input(self, f_ds, nam, da):
+		# writes an input file for model creation in Abaqus
+		fil = open('{}_.inp'.format(nam), 'w')
+		fil.write('Written by Materialise Abaqus export filter\n')
+		fil.write('*HEADING\n')
+		fil.write('** Units: mm\n\n')
+		vcp_max = np.max(self.nodal_position, axis = 0)
+		vcp_min = np.min(self.nodal_position, axis = 0)
+		fil.write('!min_xyz_{}_{}_{}\n'.format(vcp_min[1], vcp_min[2], vcp_min[0]))
+		fil.write('!max_xyz_{}_{}_{}\n'.format(vcp_max[1], vcp_max[2], vcp_max[0]))
+		vca_minz = self.nodal_position[:, 0] == vcp_min[0]
+		vca_maxz = self.nodal_position[:, 0] == vcp_max[0]
+		vcc_minz = np.mean(self.nodal_position[vca_minz], axis = 0)
+		vcc_maxz = np.mean(self.nodal_position[vca_maxz], axis = 0)
+		fil.write('!cen_fix_{}_{}_{}\n'.format(vcc_minz[1], vcc_minz[2], vcc_minz[0]))
+		fil.write('!cen_twist_{}_{}_{}\n'.format(vcc_maxz[1], vcc_maxz[2], vcc_maxz[0]))
+		fil.write('!elementsize_{}\n\n'.format(da))
+		fil.write('*NODE\n')
+		for n in range(self.nodal_position.shape[0]): # iterate over number of nodes
+			fil.write('\t{}, {}, {}, {}\n'.format(n+1, self.nodal_position[n, 1], self.nodal_position[n, 2], self.nodal_position[n, 0])) # print nodal positions
+		fil.write('*ELEMENT, TYPE=C3D8\n')
+		for e in range(self.nodes_on_element.shape[0]): # iterate over number of elements
+			fil.write('\t{}, '.format(e+1)) # print element number 
+			for c in [4, 5, 7, 6, 0, 1, 3, 2]:
+				fil.write('{}, '.format(self.nodes_on_element[e, c]+1)) # print nodes located on element
+			fil.write('\n')
+		vcr = np.arange(1, self.num_elements+1)
+		for i in range(len(self.unique_elastic_modulus)): # iterate over unique elastic modulus
+			vcs = vcr*(self.elastic_modulus == self.unique_elastic_modulus[i]) # classify element numbers based on whether they correspond to certain unique elastic modulus
+			vcs = vcs[vcs > 0] # keep element numbers corresponding to certain elastic modulus
+			fil.write('*Elset, elset=Set_{}\n'.format(i+1))
+			n_fulrow = np.int32(np.floor(len(vcs)/16)) # calculate number of rows with to write 16 element numbers in
+			for j in range(n_fulrow):
+				vcs_row = vcs[j*16:(j+1)*16]
+				vcs_row = ', '.join(vcs_row.astype(str))
+				fil.write('{}\n'.format(vcs_row)) # print element numbers belonging to certain elastic modulus
+			vcs_row = vcs[n_fulrow*16:]
+			vcs_row = ', '.join(vcs_row.astype(str))
+			fil.write('{}\n'.format(vcs_row)) # print remaining element numbers belonging to certain elastic modulus
+		for i in range(len(self.unique_elastic_modulus)): # iterate over number of unique elastic modulus
+			fil.write('*Solid Section, elset=Set_{}, material=Material-{}\n,\n'.format(i+1, i+1)) # print section definitions
+		for i in range(len(self.unique_elastic_modulus)): # iterate over number of unique elastic modulus
+			fil.write('*Material, name=Material-{}\n'.format(i+1)) # print material definitions
+			fil.write('*Elastic\n')
+			fil.write('{}, 0.3\n'.format(self.unique_elastic_modulus[i])) # print elastic modulus
+		fil.close()
+
 def makekernel(m):
 	# creates a custom kernel from the input size
 	tnk = np.zeros((2*m+1, 2*m+1, 2*m+1), dtype = np.float32)

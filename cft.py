@@ -9,6 +9,7 @@ from pyctimg import *
 
 mpl.rc('image', cmap = 'image') # set image colormap to 'bone' throghout the code
 ansys_wd = 'Ansys_WD' # set location for saving Ansys 'cdb' files
+abaq_wd = 'Abaqus_WD' # set location for saving Abaqus 'inp' file
 tau_b = 4250; tau_ef = 2750 # bone segmentation threshold, element formation threshold
 f_ds = 2 # downsampling factor
 sig_blu = 10; s_bk = 15 # standard deviation for blurring, size of blurrking kernel
@@ -63,6 +64,7 @@ for nam_full in nams: # iterate over files in directory
 	np.save('CFT/{}/elastic_modulus'.format(nam), vce)
 	da = (2*f_ds+1)*r_cts/1000 # calculate element size
 	mesh.write_Ansys_input(f_ds, '{}/{}_cft'.format(ansys_wd, nam))
+	mesh.write_Abaqus_input(f_ds, '{}/{}_cft'.format(abaq_wd, nam), da)
 	t_e = time.time() # stop time
 	dt = np.int16(round(t_e-t_s)); print(dt, '\n') # calculate and print runtime
 	f = open('CFT/{}/run_time.txt'.format(nam), 'w'); f.write(str(dt)); f.close() # save runtime
